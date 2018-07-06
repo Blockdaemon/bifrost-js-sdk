@@ -31,9 +31,9 @@
     </div>
   </div>
   <div id="purchase" style="display: none">
-    <p class="lead">Send <strong>testnet</strong> <span class="currency">ETH</span> to the following address:</p>
+    <p class="lead">Send <strong class="testnet_warning">testnet</strong> <span class="currency">ETH</span> to the following address:</p>
     <pre id="address">Loading...</pre>
-    <p><strong>Do not send real <span class="currency">ETH</span>!</strong></p>
+    <p class="testnet_warning"><strong>Do not send real <span class="currency">ETH</span>!</strong></p>
     <p>Exchange rate: 1 <span class="currency">ETH</span> = 1 TOKE token</p>
   </div>
   <p><a href="https://github.com/stellar/go/tree/master/services/bifrost#demo" target="_blank">Instructions</a></p>
@@ -80,6 +80,16 @@
     // Change between ETH and BTC in texts
     document.querySelectorAll('.currency').forEach(element => {
       element.innerHTML = currency;
+    });
+
+    // Enable or disable testnet warnings
+    document.querySelectorAll('.testnet_warning').forEach(element => {
+      // We base the decision on the stellar network. There is the possibility
+      // that people issue tokens on the stellar testnet but have it payed for
+      // with tokens from bitcoin/ethereum mainnet. In this case the warnings
+      // would be shown incorrectly but hey, this is just a demo and this is a
+      // very far-fetched edge case.
+      element.style.display = params["network"] == "test" ? '' : 'none';
     });
 
     // Start the purchase process
