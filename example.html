@@ -34,7 +34,7 @@
     <p class="lead">Send <strong class="testnet_warning">testnet</strong> <span class="currency">ETH</span> to the following address:</p>
     <pre id="address">Loading...</pre>
     <p class="testnet_warning"><strong>Do not send real <span class="currency">ETH</span>!</strong></p>
-    <p>Exchange rate: 1 <span class="currency">ETH</span> = 1 TOKE token</p>
+    <p>Exchange rate: 1 <span class="currency">ETH</span> = 1 token</p>
   </div>
   <p><a href="https://github.com/stellar/go/tree/master/services/bifrost#demo" target="_blank">Instructions</a></p>
   <hr />
@@ -111,9 +111,9 @@
     } else if (event == Bifrost.AccountConfiguredEvent) {
       setStatus("Account configured, waiting for tokens...", 60)
     } else if (event == Bifrost.ExchangedEvent) {
-      setStatus("Congrats! TOKE purchased. Your Stellar keys: <pre>Public key: "+keypair.publicKey()+"\nSecret key: "+keypair.secret()+"</pre>", 100);
+      setStatus("Congrats! purchased. Your Stellar keys: <pre>Public key: "+keypair.publicKey()+"\nSecret key: "+keypair.secret()+"</pre>", 100);
     } else if (event == Bifrost.ExchangedTimelockedEvent) {
-      setStatus("Congrats! TOKE purchased but will be locked. Your Stellar keys: <pre>Public key: "+keypair.publicKey()+"\nSecret key: "+keypair.secret()+"</pre>\nUnlock transaction: <pre>"+data.transaction+"</pre>", 100);
+      setStatus("Congrats! purchased but will be locked. Your Stellar keys: <pre>Public key: "+keypair.publicKey()+"\nSecret key: "+keypair.secret()+"</pre>\nUnlock transaction: <pre>"+data.transaction+"</pre>", 100);
     } else if (event == Bifrost.ErrorEvent) {
       setStatus("Error!", 0);
       console.error(data);
