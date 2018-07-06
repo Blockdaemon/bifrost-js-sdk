@@ -17,42 +17,81 @@
       box-shadow: 0 1px 3px rgba(0,0,0,.3);
       border-radius: 3px;
     }
+
   </style>
 </head>
 <body>
 
 <div class="container">
-  <p class="lead">Send Ropsten <strong>testnet</strong> ETH to the following address:</p>
-  <pre id="address">Loading...</pre>
-  <p><strong>Do not send real ETH!</strong></p>
-  <p>Exchange rate: 1 ETH = 1 TOKE token</p>
+  <div id="payment_method">
+    <p class="lead">Payment method:</p>
+    <div class="btn-group btn-group-lg btn-group-justified" role="group" aria-label="Payment options">
+      <a onclick="onSelectPaymentMethod('bitcoin')" class="btn btn-default">Bitcoin</a>
+      <a onclick="onSelectPaymentMethod('ethereum')" class="btn btn-default">Ethereum</a>
+    </div>
+  </div>
+  <div id="purchase" style="display: none">
+    <p class="lead">Send <strong>testnet</strong> <span class="currency">ETH</span> to the following address:</p>
+    <pre id="address">Loading...</pre>
+    <p><strong>Do not send real <span class="currency">ETH</span>!</strong></p>
+    <p>Exchange rate: 1 <span class="currency">ETH</span> = 1 TOKE token</p>
+  </div>
   <p><a href="https://github.com/stellar/go/tree/master/services/bifrost#demo" target="_blank">Instructions</a></p>
   <hr />
   <div class="progress">
     <div id="progressbar" class="progress-bar progress-bar-striped active" style="width: 0%"></div>
   </div>
-  <p class="lead" id="status">Generating keys...</p>
+  <p class="lead" id="status">Choose payment method...</p>
 </div>
 
 <script src="./dist/bifrost.js"></script>
 <script type="text/javascript">
   var params = {
     network: 'test',
-    horizonURL: 'https://horizon-testnet.stellar.org',
-    bifrostURL: 'http://localhost:8000',
-    recoveryPublicKey: 'GDGVTKSEXWB4VFTBDWCBJVJZLIY6R3766EHBZFIGK2N7EQHVV5UTA63C'
+    horizonURL: 'http://35.231.100.162:8000',
+    bifrostURL: 'http://35.231.100.162:8001',
+    horizonAllowHttp: true
   };
 
-  var session = new Bifrost.Session(params);
   var keypair;
-  session.startEthereum(onEvent).then(params => {
-    setStatus("Waiting for a transaction...", 10);
-    document.getElementById("address").innerText = params.address;
-    keypair = params.keypair;
-  }).catch(err => {
-    setStatus("Error", 0);
-    console.error(err);
-  });
+  var session = new Bifrost.Session(params);
+
+  function onSelectPaymentMethod(paymentMethod) {
+    document.getElementById("payment_method").style.display = 'none';
+    document.getElementById("purchase").style.display = '';
+
+    setStatus("Generating keys...", 0);
+
+    var startFunc;
+    var currency;
+
+    if (paymentMethod == 'bitcoin') {
+      startFunc = session.startBitcoin;
+      currency = "BTC";
+    } else if (paymentMethod == 'ethereum') {
+      startFunc = session.startEthereum;
+      currency = "ETH";
+    } else {
+      setStatus("Error", 0);
+      console.error("Unkown payment method: " + paymentMethod);
+      return;
+    }
+
+    // Change between ETH and BTC in texts
+    document.querySelectorAll('.currency').forEach(element => {
+      element.innerHTML = currency;
+    });
+
+    // Start the purchase process
+    startFunc.bind(session)(onEvent).then(params => {
+      setStatus("Waiting for a transaction...", 10);
+      document.getElementById("address").innerText = params.address;
+      keypair = params.keypair;
+    }).catch(err => {
+      setStatus("Error", 0);
+      console.error(err);
+    });
+  }
 
   function onEvent(event, data) {
     if (event == Bifrost.TransactionReceivedEvent) {
